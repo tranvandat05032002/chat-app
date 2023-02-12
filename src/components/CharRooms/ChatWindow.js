@@ -1,7 +1,6 @@
 import { UserAddOutlined } from "@ant-design/icons";
 import { Avatar, Button, Form, Input, Tooltip } from "antd";
 import React from "react";
-import styled from "styled-components";
 import Message from "./Message";
 const { Group } = Avatar;
 const ChatWindow = () => {
@@ -28,7 +27,7 @@ const ChatWindow = () => {
         </div>
       </div>
       <div className="h-[calc(100%-56px)] flex flex-col p-[11px] justify-end">
-        <div className="h-max-full overflow-y-auto" id="Message">
+        <div className="overflow-y-auto h-max-full" id="Message">
           <Message
             text={"123"}
             displayName="Tran Van Dat"

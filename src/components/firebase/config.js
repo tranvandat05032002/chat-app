@@ -12,10 +12,10 @@ const firebaseConfig = {
   projectId: "chat-app-fb52f",
   storageBucket: "chat-app-fb52f.appspot.com",
   messagingSenderId: "1078501177580",
-  appId: "1:1078501177580:web:bb9093d7561d8c1eae8dc9"
+  appId: "1:1078501177580:web:bb9093d7561d8c1eae8dc9",
 };
 
-// Initialize Firebaseß
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
