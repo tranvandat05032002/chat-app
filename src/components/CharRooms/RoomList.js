@@ -19,16 +19,23 @@ const LinkStyles = styled(Typography.Link)`
   margin-bottom: 5px;
 `;
 const RoomList = () => {
-  const { rooms, setIsOpenModal } = React.useContext(AppContext);
+  const { rooms, setIsOpenModal, setSelectedRoom } =
+    React.useContext(AppContext);
   const handleOpenModal = () => {
     setIsOpenModal(true);
   };
-  console.log(rooms);
   return (
     <Collapse defaultActiveKey ghost={["1"]}>
       <PanelStyled header="Danh sách các phòng" key={"1"}>
         {rooms.map((room) => (
-          <LinkStyles key={room.id}>{"#" + room.name}</LinkStyles>
+          <LinkStyles
+            key={room.id}
+            onClick={() => {
+              setSelectedRoom(room.id);
+            }}
+          >
+            {"#" + room.name}
+          </LinkStyles>
         ))}
         <Button
           type="text"

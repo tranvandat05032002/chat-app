@@ -1,15 +1,17 @@
 import { UserAddOutlined } from "@ant-design/icons";
 import { Avatar, Button, Form, Input, Tooltip } from "antd";
 import React from "react";
+import { AppContext } from "../../context/AppProvider";
 import Message from "./Message";
 const { Group } = Avatar;
 const ChatWindow = () => {
+  const { selectedRoom, members } = React.useContext(AppContext);
   return (
     <div className="h-screen">
       <div className="flex justify-between h-[56px] py-0 px-4 items-center border-b border-[rgb(230,230,230)]">
         <div className="flex flex-col justify-center">
-          <p className="m-0 font-bold">Room 1</p>
-          <span className="text-[12px]">Day la room 1</span>
+          <p className="m-0 font-bold">{selectedRoom?.name}</p>
+          <span className="text-[12px]">{selectedRoom?.description}</span>
         </div>
         <div className="flex items-center">
           <Button type={"text"} icon={<UserAddOutlined />}>
@@ -17,12 +19,15 @@ const ChatWindow = () => {
           </Button>
 
           <Group size="small" maxCount={2} className="">
-            <Tooltip title="A">
-              <Avatar>A</Avatar>
-            </Tooltip>
-            <Tooltip title="B">
-              <Avatar>B</Avatar>
-            </Tooltip>
+            {members.map((member) => (
+              <Tooltip title={member?.displayName} key={member.id}>
+                <Avatar src={member.photoURL}>
+                  {member.photoURL
+                    ? ""
+                    : member?.displayName?.chatAt(0)?.toUpperCase()}
+                </Avatar>
+              </Tooltip>
+            ))}
           </Group>
         </div>
       </div>
