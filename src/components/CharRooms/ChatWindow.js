@@ -17,7 +17,9 @@ const ChatWindow = () => {
         <div className="flex items-center">
           <Button
             type={"text"}
-            onClick={setIsInviteMemberVisible(true)}
+            onClick={() => {
+              setIsInviteMemberVisible(true);
+            }}
             icon={<UserAddOutlined />}
           >
             Mời

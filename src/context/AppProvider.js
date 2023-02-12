@@ -4,7 +4,8 @@ import { AuthContext } from "./AuthProvider";
 export const AppContext = React.createContext();
 export default function AppProvider({ children }) {
   const [isOpenModal, setIsOpenModal] = React.useState(false);
-  const [isInviteMemberVisible, setIsInviteMemberVisible] = React.useState(false)
+  const [isInviteMemberVisible, setIsInviteMemberVisible] =
+    React.useState(false);
   const [selectedRoomID, setSelectedRoom] = React.useState("");
   const { uid } = React.useContext(AuthContext);
   const roomsCondition = React.useMemo(() => {
@@ -35,7 +36,7 @@ export default function AppProvider({ children }) {
         members,
         isOpenModal,
         setIsOpenModal,
-        isInviteMemberVisible, 
+        isInviteMemberVisible,
         setIsInviteMemberVisible,
         selectedRoomID,
         setSelectedRoom,

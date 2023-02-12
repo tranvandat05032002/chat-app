@@ -21,7 +21,6 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
     };
     return debounce(loadOptions, debounceTimeout);
   }, [debounceTimeout, fetchOptions]);
-
   return (
     <Select
       labelInValue
@@ -62,6 +61,7 @@ const InviteMemberModal = () => {
   const handleCancel = () => {
     form.resetFields();
     setIsInviteMemberVisible(false);
+    console.log(isInviteMemberVisible);
   };
   return (
     <div>
@@ -75,6 +75,7 @@ const InviteMemberModal = () => {
           <DebounceSelect
             mode="multiple"
             label="Tên các thành viên"
+            value={value}
             placeholder="Nhập tên thành viên"
             fetchOptions={fetchUserList}
             onChange={(newValue) => setValue(newValue)}
