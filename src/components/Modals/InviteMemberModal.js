@@ -1,10 +1,17 @@
 import { Avatar, Form, Modal, Select, Spin } from "antd";
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  limit,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { debounce } from "lodash";
 import React from "react";
 import styled from "styled-components";
 import { AppContext } from "../../context/AppProvider";
-import { AuthContext } from "../../context/AuthProvider";
 import { db } from "../firebase/config";
 
 function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
@@ -70,23 +77,29 @@ const ModalStyled = styled(Modal)`
   }
 `;
 const InviteMemberModal = () => {
-  const { isInviteMemberVisible, setIsInviteMemberVisible } =
-    React.useContext(AppContext);
+  const {
+    isInviteMemberVisible,
+    setIsInviteMemberVisible,
+    selectedRoom,
+    selectedRoomID,
+  } = React.useContext(AppContext);
   const [value, setValue] = React.useState([]);
-  const { uid } = React.useContext(AuthContext);
   const [form] = Form.useForm();
-  const handleOk = () => {
+  const handleOk = async () => {
     //reset form
     form.resetFields();
 
     //update members
+    const roomRef = doc(db, "Rooms", selectedRoomID);
+    await updateDoc(roomRef, {
+      members: [...selectedRoom.members, ...value.map((val) => val.value)],
+    });
     setIsInviteMemberVisible(false);
   };
   const handleCancel = () => {
     form.resetFields();
     setIsInviteMemberVisible(false);
   };
-  console.log(value);
   return (
     <div>
       <ModalStyled
