@@ -18,6 +18,7 @@ const ChatWindow = () => {
             </div>
             <div className="flex items-center">
               <Button
+                className="flex items-center"
                 type={"text"}
                 onClick={() => {
                   setIsInviteMemberVisible(true);

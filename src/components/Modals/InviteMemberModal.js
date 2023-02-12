@@ -14,7 +14,12 @@ import styled from "styled-components";
 import { AppContext } from "../../context/AppProvider";
 import { db } from "../firebase/config";
 
-function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
+function DebounceSelect({
+  fetchOptions,
+  debounceTimeout = 300,
+  curMembers,
+  ...props
+}) {
   const [fetching, setFetching] = React.useState(false);
   const [options, setOptions] = React.useState([]);
 
@@ -23,19 +28,22 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
       setOptions([]);
       setFetching(true);
 
-      fetchOptions(value).then((newOptions) => {
+      fetchOptions(value, curMembers).then((newOptions) => {
         console.log(newOptions);
         setOptions(newOptions);
         setFetching(false);
       });
     };
     return debounce(loadOptions, debounceTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceTimeout, fetchOptions]);
   return (
     <Select
       labelInValue
       filterOption={false}
       onSearch={debounceFetch}
+      defaultValue={""}
+      autoFocus={true}
       notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}
     >
@@ -50,7 +58,7 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
     </Select>
   );
 }
-async function fetchUserList(search) {
+async function fetchUserList(search, curMembers) {
   const searchRef = collection(db, "Users");
   const queryData = query(
     searchRef,
@@ -66,7 +74,7 @@ async function fetchUserList(search) {
       photoURL: doc.data().photoURL,
     });
   });
-  return dataFirebase;
+  return dataFirebase.filter((opt) => !curMembers.includes(opt.value));
 }
 const ModalStyled = styled(Modal)`
   &&& {
@@ -85,6 +93,7 @@ const InviteMemberModal = () => {
   } = React.useContext(AppContext);
   const [value, setValue] = React.useState([]);
   const [form] = Form.useForm();
+  console.log(value);
   const handleOk = async () => {
     //reset form
     form.resetFields();
@@ -117,6 +126,7 @@ const InviteMemberModal = () => {
             fetchOptions={fetchUserList}
             onChange={(newValue) => setValue(newValue)}
             style={{ width: "100%" }}
+            curMembers={selectedRoom.members}
           ></DebounceSelect>
         </Form>
       </ModalStyled>
