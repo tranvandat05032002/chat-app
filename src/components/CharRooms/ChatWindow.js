@@ -5,7 +5,8 @@ import { AppContext } from "../../context/AppProvider";
 import Message from "./Message";
 const { Group } = Avatar;
 const ChatWindow = () => {
-  const { selectedRoom, members } = React.useContext(AppContext);
+  const { selectedRoom, members, setIsInviteMemberVisible } =
+    React.useContext(AppContext);
   return (
     <div className="h-screen">
       <div className="flex justify-between h-[56px] py-0 px-4 items-center border-b border-[rgb(230,230,230)]">
@@ -14,7 +15,11 @@ const ChatWindow = () => {
           <span className="text-[12px]">{selectedRoom?.description}</span>
         </div>
         <div className="flex items-center">
-          <Button type={"text"} icon={<UserAddOutlined />}>
+          <Button
+            type={"text"}
+            onClick={setIsInviteMemberVisible(true)}
+            icon={<UserAddOutlined />}
+          >
             Mời
           </Button>
 
