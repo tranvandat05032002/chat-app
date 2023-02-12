@@ -1,8 +1,8 @@
 import { Row, Col, Button, Typography } from "antd";
 import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
 import React from "react";
-import { auth} from "../firebase/config";
-import addDocument from "../firebase/service";
+import { auth } from "../firebase/config";
+import addDocument, { generateKeywords } from "../firebase/service";
 
 const { Title } = Typography;
 
@@ -22,6 +22,7 @@ const Login = () => {
           email: user.email,
           providerID: user.providerData[0].providerId,
           photoURL: user.photoURL,
+          keywords: generateKeywords(user?.displayName),
         });
       }
     } catch (error) {

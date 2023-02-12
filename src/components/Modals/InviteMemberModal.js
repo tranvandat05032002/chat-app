@@ -1,9 +1,11 @@
 import { Avatar, Form, Modal, Select, Spin } from "antd";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { debounce } from "lodash";
 import React from "react";
 import styled from "styled-components";
 import { AppContext } from "../../context/AppProvider";
 import { AuthContext } from "../../context/AuthProvider";
+import { db } from "../firebase/config";
 
 function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
   const [fetching, setFetching] = React.useState(false);
@@ -15,6 +17,7 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
       setFetching(true);
 
       fetchOptions(value).then((newOptions) => {
+        console.log(newOptions);
         setOptions(newOptions);
         setFetching(false);
       });
@@ -24,14 +27,15 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
   return (
     <Select
       labelInValue
+      filterOption={false}
       onSearch={debounceFetch}
       notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}
     >
       {options.map((opt) => (
-        <Select.Option>
+        <Select.Option key={opt?.value} value={opt?.value} title={opt.label}>
           <Avatar size={"small"} src={opt.photoURL}>
-            {opt.photoURl ? "" : opt?.label?.charAt(0)?.toUpperCase()}
+            {opt.photoURl ? "" : opt.label?.charAt(0)?.toUpperCase()}
           </Avatar>
           {`${opt.label}`}
         </Select.Option>
@@ -39,7 +43,24 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, ...props }) {
     </Select>
   );
 }
-async function fetchUserList() {}
+async function fetchUserList(search) {
+  const searchRef = collection(db, "Users");
+  const queryData = query(
+    searchRef,
+    where("keywords", "array-contains", search),
+    limit(20)
+  );
+  const querySnapshot = await getDocs(queryData);
+  let dataFirebase = [];
+  querySnapshot.forEach((doc) => {
+    dataFirebase.push({
+      label: doc.data().displayName,
+      value: doc.data().uid,
+      photoURL: doc.data().photoURL,
+    });
+  });
+  return dataFirebase;
+}
 const ModalStyled = styled(Modal)`
   &&& {
     .ant-btn-primary {
@@ -55,14 +76,17 @@ const InviteMemberModal = () => {
   const { uid } = React.useContext(AuthContext);
   const [form] = Form.useForm();
   const handleOk = () => {
+    //reset form
     form.resetFields();
+
+    //update members
     setIsInviteMemberVisible(false);
   };
   const handleCancel = () => {
     form.resetFields();
     setIsInviteMemberVisible(false);
-    console.log(isInviteMemberVisible);
   };
+  console.log(value);
   return (
     <div>
       <ModalStyled
