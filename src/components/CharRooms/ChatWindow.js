@@ -3,10 +3,45 @@ import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
 import React from "react";
 import { AppContext } from "../../context/AppProvider";
 import Message from "./Message";
+import addDocument from "../firebase/service";
+import { AuthContext } from "../../context/AuthProvider";
+import useFireStore from "../../hook/useFirebase";
+import { formatRelative } from "date-fns";
 const { Group } = Avatar;
 const ChatWindow = () => {
   const { selectedRoom, members, setIsInviteMemberVisible } =
     React.useContext(AppContext);
+  const { uid, photoURL, displayName } = React.useContext(AuthContext);
+  const [inputValue, setInputValue] = React.useState("");
+  const [form] = Form.useForm();
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+  const handleOnSubmit = () => {
+   if(!inputValue){
+    return null;
+   }
+   else{
+    addDocument("Messages", {
+      text: inputValue,
+      uid,
+      photoURL,
+      roomID: selectedRoom.id,
+      displayName,
+    });
+
+    form.resetFields(["message"]);
+   }
+  };
+  const messageCondition = React.useMemo(
+    () => ({
+      fieldName: "roomID",
+      operator: "==",
+      compareValue: selectedRoom.id,
+    }),
+    [selectedRoom.id]
+  );
+  const messages = useFireStore("Messages", messageCondition);
   return (
     <div className="h-screen">
       {selectedRoom.id ? (
@@ -43,56 +78,32 @@ const ChatWindow = () => {
           </div>
           <div className="h-[calc(100%-56px)] flex flex-col p-[11px] justify-end">
             <div className="overflow-y-auto h-max-full" id="Message">
-              <Message
-                text={"123"}
-                displayName="Tran Van Dat"
-                photoURL={
-                  "https://haycafe.vn/wp-content/uploads/2022/02/Hinh-nen-gai-Nhat-xinh-dep-dang-yeu.jpg"
-                }
-                createAt="10:10:2022AM"
-              ></Message>
-              <Message
-                text={"12334312sds"}
-                displayName="Tran Van Dat"
-                photoURL={
-                  "https://haycafe.vn/wp-content/uploads/2022/02/Hinh-nen-gai-Nhat-xinh-dep-dang-yeu.jpg"
-                }
-                createAt="10:10:2022AM"
-              ></Message>
-              <Message
-                text={"1235657rfdsfs"}
-                displayName="Tran Van Dat"
-                photoURL={
-                  "https://haycafe.vn/wp-content/uploads/2022/02/Hinh-nen-gai-Nhat-xinh-dep-dang-yeu.jpg"
-                }
-                createAt="10:10:2022AM"
-              ></Message>
-              <Message
-                text={"123dsda2312"}
-                displayName="Tran Van Dat"
-                photoURL={
-                  "https://haycafe.vn/wp-content/uploads/2022/02/Hinh-nen-gai-Nhat-xinh-dep-dang-yeu.jpg"
-                }
-                createAt="10:10:2022AM"
-              ></Message>
-              <Message
-                text={"123"}
-                displayName="Tran Van Dat"
-                photoURL={
-                  "https://haycafe.vn/wp-content/uploads/2022/02/Hinh-nen-gai-Nhat-xinh-dep-dang-yeu.jpg"
-                }
-                createAt="10:10:2022AM"
-              ></Message>
+              {messages?.map((message) => (
+                <Message
+                  key={message.id}
+                  text={message.text}
+                  displayName={message.displayName}
+                  photoURL={message.photoURL}
+                  createdAt={message.createdAt}
+                ></Message>
+              ))}
             </div>
-            <Form className="flex justify-between items-center py-[2px] pr-[2px] pl-[0px] border border-[rgb(230,230,230)] rounded-[2px]">
-              <Form.Item className="mb-0 flex-[1]">
+            <Form
+              form={form}
+              className="flex justify-between items-center py-[2px] pr-[2px] pl-[0px] border border-[rgb(230,230,230)] rounded-[2px]"
+            >
+              <Form.Item className="mb-0 flex-[1]" name={"message"}>
                 <Input
                   bordered={false}
                   autoComplete="off"
                   placeholder="ABCabc..."
+                  onChange={handleInputChange}
+                  onPressEnter={handleOnSubmit}
                 ></Input>
               </Form.Item>
-              <Button className="primary">Gửi</Button>
+              <Button className="primary" onClick={handleOnSubmit}>
+                Gửi
+              </Button>
             </Form>
           </div>
         </>
